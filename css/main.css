@@ -74,7 +74,7 @@
 	font-family: "微软雅黑";
 	font-size: 1rem;
 	line-height: 1.6;
-	width: calc(100% - 2rem);
+	width: calc(100% - 3rem);
 	vertical-align: top;
 }
 .done{
@@ -96,6 +96,6 @@
 	font-family: "微软雅黑";
 	font-size: 1rem;
 	line-height: 1.6;
-	width: calc(100% - 2rem);
+	width: calc(100% - 3rem);
 	vertical-align: top; 
 }
