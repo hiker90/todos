@@ -15,6 +15,7 @@
 	max-width: 1000px;
 	min-width: 780px;
 	margin: 0 auto;
+	padding: 0 20px;
 }
 .sub-title{
 	font-family: "微软雅黑";
@@ -25,7 +26,7 @@
 	width: 100%;
 	font-family: "微软雅黑";
 	line-height: 1.6;
-	font-size: 18px;
+	font-size: 1rem;
 	text-indent: 1em;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
@@ -40,12 +41,12 @@
 	min-width: 720px; 
 	color: #FFB93A;
 	font-family: "微软雅黑";
-	font-size: 18px;
+	font-size: 1rem
 	font-weight: bold;
 	line-height: 2;
 }
 .todo-class ul li{
-	width: 60px;
+	width: 6rem;
 	text-align: center;
 	display: inline-block;
 	margin-right: 20px;
@@ -57,7 +58,7 @@
 .todo-class ul li a{
 	font-family: "微软雅黑";
 	line-height: 2;
-	font-size: 18px;
+	font-size: 1rem;
 }
 /*待办列表*/
 .todo-item{
@@ -65,12 +66,16 @@
 	padding: 10px;
 	margin-bottom: 10px;
 }
+#todo-check{
+	width: .5rem;
+	height: .5rem;
+}
 .item-title{
 	display: inline-block;
 	font-family: "微软雅黑";
-	font-size: 18px;
+	font-size: 1rem;
 	line-height: 1.6;
-	width: calc(100% - 40px);
+	width: calc(100% - 2rem);
 	vertical-align: top;
 }
 .done{
@@ -79,7 +84,7 @@
 }
 .del{
 	font-family: "微软雅黑";
-	font-size: 18px;
+	font-size: 1rem;
 	line-height: 1.6;
 }
 .editing{
@@ -90,8 +95,8 @@
 }
 #todo-edit{
 	font-family: "微软雅黑";
-	font-size: 18px;
+	font-size: 1rem;
 	line-height: 1.6;
-	width: calc(100% - 40px);
+	width: calc(100% - 2rem);
 	vertical-align: top; 
 }

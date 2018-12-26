@@ -147,6 +147,14 @@ document.addEventListener('DOMContentLoaded',function () {
     }
     watchHashChange();
     window.addEventListener('hashchange',watchHashChange,false);
+    //设置页面fontsize基准值
+    var bodyWidth = document.body.clientWidth;
+    if(bodyWidth < 1000){
+      var basicWidth = 375;
+      var basiicSize = 55;
+      var newSize = basiicSize/basicWidth*bodyWidth+"%";
+      document.getElementsByTagName('html')[0].style.fontSize = newSize;
+    }   
 },false);
 </script>
 
