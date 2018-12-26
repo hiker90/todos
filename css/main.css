@@ -66,8 +66,8 @@
 	margin-bottom: 10px;
 }
 #todo-check{
-	width: .5rem;
-	height: .5rem;
+	width: 2rem;
+	height: 2rem;
 }
 .item-title{
 	display: inline-block;
