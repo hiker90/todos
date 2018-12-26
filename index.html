@@ -1,43 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>计划列表</title>
-	<script src="https://cdn.bootcss.com/vue/2.5.17/vue.js"></script>
-	<link rel="stylesheet" href="style1.css">
-	<script src="store.js"></script>
+  <meta charset="UTF-8">
+  <title>todos</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-	<div class="page-top">
-        <div class="page-content wrap">
-			<h2>计划清单</h2>
-		</div>
-	</div>
-	<div class="main wrap">
-		<h3>添加任务：</h3>
-		<input type="text" placeholder="输入计划，回车确认" v-model="todo" @keyup.enter = "addTodo" class="task-input">
-		<div class="task-count clearFix">
-			<span class="todo-num fl">{{noCheckLength}}个未完成项目</span>
-			<ul class="fr clearFix">
-				<li class="fl"><a href="#all" :class="{active:(visibility=='all') || !visibility}">所有计划</a></li>
-				<li class="fl"><a href="#finished" :class="{active:visibility=='finished'}">已完成</a></li>
-				<li class="fl"><a href="#unfinished" :class="{active:visibility=='unfinished'}">未完成</a></li>
-			</ul>
-		</div>
-		<div class="tasks">
-			<h3>任务列表：</h3>
-			<span v-show="!list.length" class="no-task-tip">请添加待办事项。</span>
-			<ul v-show="list.length" class="todo-list">
-				<li v-for="item in filterList" class="todo clearFix" :class="{completed: item.isChecked,editing: item === editorTodos}">
-					<div class="view">
-						<input type="checkbox" name="" id="" v-model="item.isChecked">
-						<label for=""><a href="avascript:;"  @dblclick="edtorTodo(item)">{{ item.title }}</a></label>
-						<a href="javascript:;" @click="delTodo(item)" class="fr">×</a>
-					</div>
-					<input @blur="edtorTodoed(item)" @keyup.13="edtorTodoed(item)" @keyup.esc="cancelTodo(item)" v-focus="editorTodos === item" type="text" class="edit" v-model="item.title" />
-				</li>
-			</ul>
-		</div>
-	</div>
+<div class="tab-1">
+  <h2 class="big-title">待办清单</h2>
+</div>
+<div id="container">
+  <div class="tab-2">
+    <h3 class="sub-title">添加待办</h3>
+    <input type="text" id="todo-add" placeholder="请输入待办并按Enter添加" v-model="todo" @keyup.enter = "addTodo">
+  </div>
+  <div class="tab-3">
+    <div id="todo-remain">
+      <span>目前还有{{noCheckLength}}项未完成</span>
+    </div>
+    <div class="todo-class">
+      <ul>
+        <li :class="{active:(visibility=='all') || !visibility}"><a href="#all">全部</a></li>
+        <li :class="{active:visibility=='finished'}"><a href="#finished">已完成</a></li>
+        <li  :class="{active:visibility=='unfinished'}"><a href="#unfinished">未完成</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tab-4">
+    <h3 class="sub-title">待办列表</h3>
+    <div class="todo-list">
+      <div class="notodos" v-show="!list.length">
+        <span>目前没有任何待办</span>
+      </div>
+      <ul v-show="list.length">
+        <li v-for="item in filterList">
+          <div class="todo-item">
+            <input type="checkbox" id="todo-check" v-model="item.isChecked">
+            <a href="javascript:;" class="item-title" :class="{editing:item !== editorTodos,edited:item === editorTodos,done:item.isChecked}" @dblclick="edtorTodo(item)">{{item.title}}</a>
+            <input type="text" id="todo-edit" 
+           v-focus="editorTodos === item" v-model="item.title" :class="{editing:item === editorTodos,edited:item !== editorTodos}" @blur="edtorTodoed(item)" @keyup.13="edtorTodoed(item)" @keyup.esc="cancelTodo(item)">
+            <a href="javascript:;" class="del" @click="delTodo(item)">×</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.0/vue-resource.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function () {
+    var store = {
+        save(key,value) {
+            localStorage.setItem(key,JSON.stringify(value));
+        },
+        fetch(key){
+           return JSON.parse(localStorage.getItem(key)) || [];
+        }
+    }
+    var fiter = {
+        all:function (list) {
+            return list;
+        },
+        finished:function (list) {
+            return list.filter(function (item) {
+                return item.isChecked
+            });
+        },
+        unfinished:function (list) {
+            return list.filter(function (item) {
+                return !item.isChecked
+            });
+        }
+    }
+    var list = store.fetch("datura_msg");
+    var vm = new Vue({
+        el: "#container",
+        data: {
+            list: list, 
+            todo: '',
+            listMsg: {},
+            editorTodos: '',
+            beforeTitle: '',
+            visibility: 'all'
+        },
+        watch: {
+           list: {
+               handler:function () {
+                   store.save("datura_msg",this.list);
+               },
+               deep:true
+           }
+        },
+        computed: {
+            noCheckLength:function () {
+                return this.list.filter(function(item){
+                        return !item.isChecked
+                    }).length
+            },
+            filterList:function () {
+                return fiter[this.visibility]?fiter[this.visibility](list):list;
+            }
+        },
+        methods: {
+            addTodo(data,ev){ 
+                this.listMsg = {
+                    title:this.todo,
+                    isChecked:false
+                }
+                this.list.push(this.listMsg);
+                this.todo = ''
+            },
+            delTodo(todo) {
+                var index = this.list.indexOf(todo);
+                if(confirm("确定删除？")){
+                    this.list.splice(index,1);
+                }
+            },
+            edtorTodo(todo) {
+                this.beforeTitle = todo.title;
+                this.editorTodos = todo;
+            },
+            edtorTodoed(todo) {
+                this.editorTodos = '';
+            },
+            cancelTodo(todo) {
+                todo.title = this.beforeTitle;
+                this.beforeTitle = '';
+                this.editorTodos = '';
+            }
+        },
+        directives: {
+            "focus": {
+                update(el,binding) {
+                    if(binding.value == true){
+                        el.focus();
+                    }
+                }
+            }
+        }
+    });
+    function watchHashChange() {
+        var hash = window.location.hash.slice(1);
+        vm.visibility = hash;
+    }
+    watchHashChange();
+    window.addEventListener('hashchange',watchHashChange,false);
+},false);
+</script>
+
 </body>
 </html>
