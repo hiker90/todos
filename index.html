@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>todos</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="tab-1">
+  <h2 class="big-title">待办清单</h2>
+</div>
+<div id="container">
+  <div class="tab-2">
+    <h3 class="sub-title">添加待办</h3>
+    <input type="text" id="todo-add" placeholder="请输入待办并按Enter添加" v-model="todoing" @keyup.enter="addTodo">
+  </div>
+  <div class="tab-3">
+    <div id="todo-remain">
+      <span>目前还有{{todonums}}项未完成</span>
+    </div>
+    <div class="todo-class">
+      <ul>
+        <li :class="{active:filter=='all'}"><a href="javascript:;" @click="changeTab('all')">全部</a></li>
+        <li :class="{active:filter=='finished'}"><a href="javascript:;" @click="changeTab('finished')">已完成</a></li>
+        <li :class="{active:filter=='unfinished'}"><a href="javascript:;" @click="changeTab('unfinished')">未完成</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tab-4">
+    <h3 class="sub-title">待办列表</h3>
+    <div class="todo-list">
+      <div class="notodos" v-show="!list.length">
+        <span>目前没有任何待办</span>
+      </div>
+      <ul>
+        <li v-for="item in filterList">
+          <div class="todo-item">
+            <input type="checkbox" id="todo-check" v-model="item.isChecked">
+            <a href="javascript:;" class="item-title" :class="{editing:editingItem!==item,edited:editingItem===item,done:item.isChecked}" @dblclick='editTodo(item)'>{{item.title}}</a>
+            <input type="text" id="todo-edit" 
+           v-focus="editingItem===item" v-model="item.title" :class="{editing:editingItem===item,edited:editingItem!==item}" @keyup.13='editedTodo(item)' @keyup.esc='cancelEdit(item)'>
+            <a href="javascript:;" class="del" @click='delTodo(item)'>×</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.0/vue-resource.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded',function(){
+  var store = {
+    save:function(key,val){
+      window.localStorage.setItem(key,JSON.stringify(val));
+    },
+    get:function(key){
+      return JSON.parse(window.localStorage.getItem(key)) || [];
+    }
+  };
+  var list = store.get('todo_data');
+  var vm = new Vue({
+    el:'#container',
+    data:{
+      list:list,
+      todoing:'',
+      filter:'all',
+      oldTitle:'',
+      editingItem:''
+    },
+    computed:{
+      todonums:function(){
+        return this.list.filter(function(val){
+          return !val.isChecked;
+        }).length;
+      },
+    },
+    methods:{
+      changeTab:function(cls){
+        this.filter = cls;
+        switch(cls){
+          case 'all': this.filterList=this.list;break;
+          case 'finished': this.filterList=this.list.filter(function(val){
+            return val.isChecked;
+          });break;
+          case 'unfinished': this.filterList=this.list.filter(function(val){
+            return !val.isChecked;
+          });break;
+        }
+      },
+      addTodo:function(){
+        this.list.push({
+          title:this.todoing,
+          isChecked:false
+        });
+        this.todoing = '';
+      },
+      delTodo:function(item){
+        var index = this.list.indexOf(item);
+        if(confirm('确认删除？')){
+          this.list.splice(index,1);
+        }
+      },
+      editTodo:function(item){
+
+        this.oldTitle = item.title;
+        this.editingItem = item;console.log(this.oldTitle);
+      },
+      editedTodo:function(item){
+        this.oldTitle = '';
+        this.editingItem = '';
+      },
+      cancelEdit:function(item){
+        item.title = this.oldTitle;
+        this.oldTitle = '';
+        this.editingItem = '';
+      }
+    },
+    watch:{
+      list:{
+        handler:function(){
+          store.save('todo_data',this.list);
+        },
+        deep:true
+      }
+    },
+    directives:{
+      focus:{
+        update(el,binding){
+          if(binding.value == true){
+            el.focus();
+          }
+        }
+      }
+    }
+  });
+},false)
+</script>
+
+</body>
+</html>
